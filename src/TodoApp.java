@@ -85,28 +85,25 @@ public class TodoApp extends JFrame {
             BorderFactory.createEmptyBorder(40, 40, 40, 40)
         ));
 
-        // Create input fields panel with improved layout
-        JPanel fieldsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 0));
+        // Fields panel with GridBagLayout for better control
+        JPanel fieldsPanel = new JPanel(new GridBagLayout());
         fieldsPanel.setBackground(Color.WHITE);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(0, 15, 0, 15);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Task input group
-        JPanel taskGroup = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        taskGroup.setBackground(Color.WHITE);
+        // Task input
         JLabel taskLabel = new JLabel("عنوان کار:");
+        taskLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         taskField = new JTextField(30);
         styleInput(taskField);
-        taskGroup.add(taskField);
-        taskGroup.add(taskLabel);
 
-        // Date input group
-        JPanel dateGroup = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        dateGroup.setBackground(Color.WHITE);
+        // Date input
         JLabel dateLabel = new JLabel("تاریخ:");
+        dateLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         dateField = new JTextField(12);
         styleInput(dateField);
         dateField.setText(toPersianDate(new Date()));
-        dateGroup.add(dateField);
-        dateGroup.add(dateLabel);
 
         // Action button
         actionButton = new JButton("افزودن کار جدید");
@@ -117,9 +114,26 @@ public class TodoApp extends JFrame {
         actionButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         // Add components to fields panel
-        fieldsPanel.add(actionButton);
-        fieldsPanel.add(dateGroup);
-        fieldsPanel.add(taskGroup);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.1;
+        fieldsPanel.add(actionButton, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 0.15;
+        fieldsPanel.add(dateLabel, gbc);
+
+        gbc.gridx = 2;
+        gbc.weightx = 0.25;
+        fieldsPanel.add(dateField, gbc);
+
+        gbc.gridx = 3;
+        gbc.weightx = 0.15;
+        fieldsPanel.add(taskLabel, gbc);
+
+        gbc.gridx = 4;
+        gbc.weightx = 0.35;
+        fieldsPanel.add(taskField, gbc);
 
         inputPanel.add(fieldsPanel);
 
