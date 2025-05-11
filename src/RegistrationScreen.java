@@ -34,70 +34,110 @@ public class RegistrationScreen extends JFrame {
         gbc.gridwidth = 2;
         mainPanel.add(titleLabel, gbc);
 
+        // Username panel
+        JPanel usernamePanel = new JPanel(new BorderLayout(10, 0));
+        usernamePanel.setBackground(Color.WHITE);
         JLabel usernameLabel = new JLabel("نام کاربری:");
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
-        mainPanel.add(usernameLabel, gbc);
-
+        usernameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         usernameField = new JTextField(15);
         styleInput(usernameField);
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        mainPanel.add(usernameField, gbc);
+        usernamePanel.add(usernameLabel, BorderLayout.WEST);
+        usernamePanel.add(usernameField, BorderLayout.CENTER);
 
-        JLabel passwordLabel = new JLabel("رمز عبور:");
         gbc.gridx = 0;
-        gbc.gridy = 2;
-        mainPanel.add(passwordLabel, gbc);
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(20, 30, 5, 30);
+        mainPanel.add(usernamePanel, gbc);
 
+        // Password panel
+        JPanel passwordPanel = new JPanel(new BorderLayout(10, 0));
+        passwordPanel.setBackground(Color.WHITE);
+        JLabel passwordLabel = new JLabel("رمز عبور:");
+        passwordLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         passwordField = new JPasswordField(15);
         styleInput(passwordField);
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        mainPanel.add(passwordField, gbc);
+        passwordPanel.add(passwordLabel, BorderLayout.WEST);
+        passwordPanel.add(passwordField, BorderLayout.CENTER);
 
-        JLabel confirmPasswordLabel = new JLabel("تکرار رمز عبور:");
         gbc.gridx = 0;
-        gbc.gridy = 3;
-        mainPanel.add(confirmPasswordLabel, gbc);
+        gbc.gridy = 2;
+        gbc.insets = new Insets(5, 30, 5, 30);
+        mainPanel.add(passwordPanel, gbc);
 
+        // Confirm Password panel
+        JPanel confirmPanel = new JPanel(new BorderLayout(10, 0));
+        confirmPanel.setBackground(Color.WHITE);
+        JLabel confirmLabel = new JLabel("تکرار رمز عبور:");
+        confirmLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         confirmPasswordField = new JPasswordField(15);
         styleInput(confirmPasswordField);
-        gbc.gridx = 1;
+        confirmPanel.add(confirmLabel, BorderLayout.WEST);
+        confirmPanel.add(confirmPasswordField, BorderLayout.CENTER);
+
+        gbc.gridx = 0;
         gbc.gridy = 3;
-        mainPanel.add(confirmPasswordField, gbc);
+        gbc.insets = new Insets(5, 30, 20, 30);
+        mainPanel.add(confirmPanel, gbc);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         buttonPanel.setBackground(Color.WHITE);
 
         JButton registerButton = new JButton("ثبت نام");
-        registerButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        styleButton(registerButton);
         registerButton.addActionListener(e -> onRegister());
 
         JButton cancelButton = new JButton("انصراف");
-        cancelButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        cancelButton.addActionListener(e -> dispose());
+        styleButton(cancelButton);
+        cancelButton.addActionListener(e -> {
+            dispose();
+            new LoginScreen(new LoginScreen.LoginCallback() {
+                @Override
+                public void onLoginSuccess() {
+                    String currentUser = UserManager.getInstance().getCurrentUser();
+                    new TodoApp(currentUser).setVisible(true);
+                }
+            }).setVisible(true);
+        });
 
         buttonPanel.add(registerButton);
         buttonPanel.add(cancelButton);
 
         gbc.gridx = 0;
         gbc.gridy = 4;
-        gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.CENTER;
         mainPanel.add(buttonPanel, gbc);
 
         add(mainPanel, BorderLayout.CENTER);
+
+        // Add enter key listener
+        KeyAdapter enterListener = new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) onRegister();
+            }
+        };
+        usernameField.addKeyListener(enterListener);
+        passwordField.addKeyListener(enterListener);
+        confirmPasswordField.addKeyListener(enterListener);
     }
 
     private void styleInput(JTextField field) {
+        field.setPreferredSize(new Dimension(field.getPreferredSize().width, 35));
         field.setBorder(new CompoundBorder(
-                new RoundedBorder(8),
-                new EmptyBorder(5, 10, 5, 10)
+            new RoundedBorder(8),
+            new EmptyBorder(5, 10, 5, 10)
         ));
         field.setBackground(new Color(250, 250, 255));
+        field.setHorizontalAlignment(JTextField.RIGHT);
+    }
+
+    private void styleButton(JButton button) {
+        button.setPreferredSize(new Dimension(100, 35));
+        button.setBackground(new Color(66, 133, 244));
+        button.setForeground(Color.WHITE);
+        button.setBorder(new RoundedBorder(8));
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 
     private void onRegister() {
@@ -120,6 +160,13 @@ public class RegistrationScreen extends JFrame {
         if (UserManager.getInstance().registerUser(username, password)) {
             JOptionPane.showMessageDialog(this, "ثبت نام با موفقیت انجام شد.", "موفقیت", JOptionPane.INFORMATION_MESSAGE);
             dispose();
+            new LoginScreen(new LoginScreen.LoginCallback() {
+                @Override
+                public void onLoginSuccess() {
+                    String currentUser = UserManager.getInstance().getCurrentUser();
+                    new TodoApp(currentUser).setVisible(true);
+                }
+            }).setVisible(true);
         } else {
             JOptionPane.showMessageDialog(this, "این نام کاربری قبلاً ثبت شده است.", "خطا", JOptionPane.ERROR_MESSAGE);
             usernameField.setText("");
