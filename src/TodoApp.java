@@ -42,6 +42,7 @@ public class TodoApp extends JFrame {
         getContentPane().setBackground(new Color(240, 242, 245));
         applyComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
+        // Top bar with gradient background
         JPanel topBar = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -75,6 +76,7 @@ public class TodoApp extends JFrame {
         logoutPanel.add(logoutButton);
         topBar.add(logoutPanel, BorderLayout.WEST);
 
+        // Input panel with white background
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
         inputPanel.setBackground(Color.WHITE);
@@ -83,26 +85,78 @@ public class TodoApp extends JFrame {
             BorderFactory.createEmptyBorder(40, 40, 40, 40)
         ));
 
-        JPanel fieldsPanel = new JPanel(new GridBagLayout());
+        // Create input fields panel with improved layout
+        JPanel fieldsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 0));
         fieldsPanel.setBackground(Color.WHITE);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(0, 15, 0, 15);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
 
+        // Task input group
+        JPanel taskGroup = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        taskGroup.setBackground(Color.WHITE);
+        JLabel taskLabel = new JLabel("عنوان کار:");
         taskField = new JTextField(30);
-        dateField = new JTextField(12);
-        
-        taskField.setEnabled(true);
-        dateField.setEnabled(true);
-        taskField.setEditable(true);
-        dateField.setEditable(true);
-        taskField.setFocusable(true);
-        dateField.setFocusable(true);
-
         styleInput(taskField);
+        taskGroup.add(taskField);
+        taskGroup.add(taskLabel);
+
+        // Date input group
+        JPanel dateGroup = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        dateGroup.setBackground(Color.WHITE);
+        JLabel dateLabel = new JLabel("تاریخ:");
+        dateField = new JTextField(12);
         styleInput(dateField);
         dateField.setText(toPersianDate(new Date()));
+        dateGroup.add(dateField);
+        dateGroup.add(dateLabel);
 
+        // Action button
+        actionButton = new JButton("افزودن کار جدید");
+        actionButton.setPreferredSize(new Dimension(180, 55));
+        actionButton.setBackground(new Color(66, 133, 244));
+        actionButton.setForeground(Color.WHITE);
+        actionButton.setBorder(new RoundedBorder(10));
+        actionButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        // Add components to fields panel
+        fieldsPanel.add(actionButton);
+        fieldsPanel.add(dateGroup);
+        fieldsPanel.add(taskGroup);
+
+        inputPanel.add(fieldsPanel);
+
+        // List panel
+        listPanel = new JPanel();
+        listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
+        listPanel.setBackground(new Color(240, 242, 245));
+        listPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+
+        JScrollPane scrollPane = new JScrollPane(listPanel);
+        scrollPane.setBorder(null);
+        scrollPane.getViewport().setBackground(new Color(240, 242, 245));
+
+        // Content panel
+        JPanel contentPanel = new JPanel(new BorderLayout(0, 25));
+        contentPanel.setBackground(new Color(240, 242, 245));
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+        contentPanel.add(inputPanel, BorderLayout.NORTH);
+        contentPanel.add(scrollPane, BorderLayout.CENTER);
+
+        add(topBar, BorderLayout.NORTH);
+        add(contentPanel, BorderLayout.CENTER);
+
+        // Add action listeners
+        actionButton.addActionListener(e -> onAction());
+        
+        KeyAdapter enterListener = new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) onAction();
+            }
+        };
+        
+        taskField.addKeyListener(enterListener);
+        dateField.addKeyListener(enterListener);
+
+        // Prevent deletion while editing
         KeyAdapter preventDeleteListener = new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -115,71 +169,6 @@ public class TodoApp extends JFrame {
         
         taskField.addKeyListener(preventDeleteListener);
         dateField.addKeyListener(preventDeleteListener);
-
-        actionButton = new JButton("افزودن کار جدید");
-        actionButton.setPreferredSize(new Dimension(180, 55));
-        actionButton.setBackground(new Color(66, 133, 244));
-        actionButton.setForeground(Color.WHITE);
-        actionButton.setBorder(new RoundedBorder(10));
-        actionButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-        JLabel taskLabel = new JLabel("عنوان کار:");
-        JLabel dateLabel = new JLabel("تاریخ:");
-        taskLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        dateLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0.1;
-        fieldsPanel.add(actionButton, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 0.15;
-        fieldsPanel.add(dateLabel, gbc);
-
-        gbc.gridx = 2;
-        gbc.weightx = 0.25;
-        fieldsPanel.add(dateField, gbc);
-
-        gbc.gridx = 3;
-        gbc.weightx = 0.15;
-        fieldsPanel.add(taskLabel, gbc);
-
-        gbc.gridx = 4;
-        gbc.weightx = 0.35;
-        fieldsPanel.add(taskField, gbc);
-
-        inputPanel.add(fieldsPanel);
-
-        listPanel = new JPanel();
-        listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-        listPanel.setBackground(new Color(240, 242, 245));
-        listPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
-
-        JScrollPane scrollPane = new JScrollPane(listPanel);
-        scrollPane.setBorder(null);
-        scrollPane.getViewport().setBackground(new Color(240, 242, 245));
-
-        JPanel contentPanel = new JPanel(new BorderLayout(0, 25));
-        contentPanel.setBackground(new Color(240, 242, 245));
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
-        contentPanel.add(inputPanel, BorderLayout.NORTH);
-        contentPanel.add(scrollPane, BorderLayout.CENTER);
-
-        add(topBar, BorderLayout.NORTH);
-        add(contentPanel, BorderLayout.CENTER);
-
-        actionButton.addActionListener(e -> onAction());
-        
-        KeyAdapter enterListener = new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) onAction();
-            }
-        };
-        
-        taskField.addKeyListener(enterListener);
-        dateField.addKeyListener(enterListener);
 
         SwingUtilities.invokeLater(() -> taskField.requestFocusInWindow());
     }
