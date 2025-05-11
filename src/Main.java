@@ -6,7 +6,8 @@ public class Main {
             new LoginScreen(new LoginScreen.LoginCallback() {
                 @Override
                 public void onLoginSuccess() {
-                    SwingUtilities.invokeLater(() -> new TodoApp().setVisible(true));
+                    String currentUser = UserManager.getInstance().getCurrentUser();
+                    SwingUtilities.invokeLater(() -> new TodoApp(currentUser).setVisible(true));
                 }
             }).setVisible(true);
         });

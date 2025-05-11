@@ -5,6 +5,7 @@ public class UserManager {
     private static final String USER_FILE = "users.txt";
     private static UserManager instance;
     private List<User> users;
+    private String currentUser;
 
     private UserManager() {
         users = new ArrayList<>();
@@ -35,9 +36,19 @@ public class UserManager {
     }
 
     public boolean validateUser(String username, String password) {
-        return users.stream()
+        boolean isValid = users.stream()
                 .anyMatch(u -> u.getUsername().equals(username.trim()) && 
                              u.getPassword().equals(password.trim()));
+        
+        if (isValid) {
+            currentUser = username.trim();
+        }
+        
+        return isValid;
+    }
+
+    public String getCurrentUser() {
+        return currentUser;
     }
 
     private void loadUsers() {
