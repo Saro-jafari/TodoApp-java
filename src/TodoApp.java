@@ -26,20 +26,18 @@ public class TodoApp extends JFrame {
     private void initLookAndFeel() {
         try {
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-            Font base = new Font("Tahoma", Font.PLAIN, 16);
-            Font bold = new Font("Tahoma", Font.BOLD, 16);
-            UIManager.put("Label.font", base);
-            UIManager.put("Button.font", bold);
-            UIManager.put("TextField.font", base);
-            UIManager.put("CheckBox.font", base);
+            UIManager.put("Label.font", new Font("Tahoma", Font.PLAIN, 14));
+            UIManager.put("Button.font", new Font("Tahoma", Font.BOLD, 14));
+            UIManager.put("TextField.font", new Font("Tahoma", Font.PLAIN, 14));
+            UIManager.put("CheckBox.font", new Font("Tahoma", Font.PLAIN, 14));
         } catch (Exception ignored) {}
     }
 
     private void initComponents() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(900, 700);
+        setSize(1000, 800);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout(10, 10));
+        setLayout(new BorderLayout(20, 20));
         getContentPane().setBackground(new Color(240, 242, 245));
         applyComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
@@ -56,15 +54,21 @@ public class TodoApp extends JFrame {
                 g2d.fillRect(0, 0, w, h);
             }
         };
-        topBar.setPreferredSize(new Dimension(0, 70));
+        topBar.setPreferredSize(new Dimension(0, 80));
 
-        // Logout button with custom styling
+        JLabel titleLabel = new JLabel("خوش آمدید " + currentUser);
+        titleLabel.setFont(new Font("Tahoma", Font.BOLD, 24));
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 30));
+        topBar.add(titleLabel, BorderLayout.CENTER);
+
         JButton logoutButton = new JButton("خروج");
+        logoutButton.setFont(new Font("Tahoma", Font.BOLD, 14));
         logoutButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         logoutButton.addActionListener(e -> logout());
         logoutButton.setForeground(Color.WHITE);
         logoutButton.setContentAreaFilled(false);
-        logoutButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        logoutButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         
         JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         logoutPanel.setOpaque(false);
@@ -77,29 +81,30 @@ public class TodoApp extends JFrame {
         inputPanel.setBackground(Color.WHITE);
         inputPanel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(230, 230, 230)),
-            BorderFactory.createEmptyBorder(20, 20, 20, 20)
+            BorderFactory.createEmptyBorder(30, 30, 30, 30)
         ));
 
-        JPanel fieldsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
+        JPanel fieldsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 0));
         fieldsPanel.setBackground(Color.WHITE);
 
-        taskField = new JTextField(20);
-        dateField = new JTextField(10);
+        taskField = new JTextField(30);
+        dateField = new JTextField(12);
         styleInput(taskField);
         styleInput(dateField);
         dateField.setText(toPersianDate(new Date()));
 
         actionButton = new JButton("افزودن کار جدید");
+        actionButton.setPreferredSize(new Dimension(150, 40));
         actionButton.setBackground(new Color(66, 133, 244));
         actionButton.setForeground(Color.WHITE);
         actionButton.setBorder(new RoundedBorder(8));
         actionButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        fieldsPanel.add(new JLabel("کار:"));
-        fieldsPanel.add(taskField);
+        fieldsPanel.add(actionButton);
         fieldsPanel.add(new JLabel("تاریخ:"));
         fieldsPanel.add(dateField);
-        fieldsPanel.add(actionButton);
+        fieldsPanel.add(new JLabel("عنوان کار:"));
+        fieldsPanel.add(taskField);
 
         inputPanel.add(fieldsPanel);
 
@@ -113,10 +118,16 @@ public class TodoApp extends JFrame {
         scrollPane.setBorder(null);
         scrollPane.getViewport().setBackground(new Color(240, 242, 245));
 
+        // Main content panel
+        JPanel contentPanel = new JPanel(new BorderLayout(0, 20));
+        contentPanel.setBackground(new Color(240, 242, 245));
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        contentPanel.add(inputPanel, BorderLayout.NORTH);
+        contentPanel.add(scrollPane, BorderLayout.CENTER);
+
         // Add components
         add(topBar, BorderLayout.NORTH);
-        add(inputPanel, BorderLayout.CENTER);
-        add(scrollPane, BorderLayout.SOUTH);
+        add(contentPanel, BorderLayout.CENTER);
 
         // Add action listeners
         actionButton.addActionListener(e -> onAction());
@@ -133,9 +144,10 @@ public class TodoApp extends JFrame {
     private void styleInput(JTextField field) {
         field.setBorder(BorderFactory.createCompoundBorder(
             new RoundedBorder(8),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
+            BorderFactory.createEmptyBorder(10, 15, 10, 15)
         ));
         field.setBackground(new Color(245, 247, 250));
+        field.setPreferredSize(new Dimension(field.getPreferredSize().width, 40));
     }
 
     private void logout() {
@@ -176,13 +188,13 @@ public class TodoApp extends JFrame {
     }
 
     private JPanel createItemPanel(TodoItem item, int index) {
-        JPanel panel = new JPanel(new BorderLayout(15, 0));
+        JPanel panel = new JPanel(new BorderLayout(20, 0));
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createCompoundBorder(
             new RoundedBorder(12),
-            BorderFactory.createEmptyBorder(12, 15, 12, 15)
+            BorderFactory.createEmptyBorder(15, 20, 15, 20)
         ));
-        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
+        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
 
         JCheckBox check = new JCheckBox();
         check.setSelected(item.completed);
@@ -196,12 +208,12 @@ public class TodoApp extends JFrame {
         JLabel text = new JLabel(item.completed ? 
             "<html><strike style='color: #999'>" + item.desc + "</strike></html>" : 
             item.desc);
-        text.setFont(new Font("Tahoma", Font.PLAIN, 16));
+        text.setFont(new Font("Tahoma", Font.PLAIN, 14));
 
         JLabel date = new JLabel(item.date);
         date.setForeground(new Color(100, 100, 100));
 
-        JPanel contentPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        JPanel contentPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         contentPanel.setBackground(Color.WHITE);
         contentPanel.add(check);
         contentPanel.add(text);
@@ -234,6 +246,7 @@ public class TodoApp extends JFrame {
 
     private JButton createButton(String text, Color color, ActionListener listener) {
         JButton button = new JButton(text);
+        button.setPreferredSize(new Dimension(100, 35));
         button.setBackground(color);
         button.setForeground(Color.WHITE);
         button.setBorder(new RoundedBorder(6));
@@ -246,7 +259,7 @@ public class TodoApp extends JFrame {
         listPanel.removeAll();
         for (int i = 0; i < items.size(); i++) {
             listPanel.add(createItemPanel(items.get(i), i));
-            listPanel.add(Box.createVerticalStrut(10));
+            listPanel.add(Box.createVerticalStrut(15));
         }
         listPanel.revalidate();
         listPanel.repaint();
