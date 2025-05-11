@@ -13,6 +13,7 @@ public class TodoApp extends JFrame {
     private JTextField taskField, dateField;
     private JButton actionButton;
     private int editIndex = -1;
+    private boolean isEditing = false;
 
     public TodoApp(String username) {
         super("لیست کارهای " + username);
@@ -26,10 +27,10 @@ public class TodoApp extends JFrame {
     private void initLookAndFeel() {
         try {
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-            UIManager.put("Label.font", new Font("Tahoma", Font.PLAIN, 14));
-            UIManager.put("Button.font", new Font("Tahoma", Font.BOLD, 14));
-            UIManager.put("TextField.font", new Font("Tahoma", Font.PLAIN, 14));
-            UIManager.put("CheckBox.font", new Font("Tahoma", Font.PLAIN, 14));
+            UIManager.put("Label.font", new Font("Tahoma", Font.PLAIN, 16));
+            UIManager.put("Button.font", new Font("Tahoma", Font.BOLD, 16));
+            UIManager.put("TextField.font", new Font("Tahoma", Font.PLAIN, 16));
+            UIManager.put("CheckBox.font", new Font("Tahoma", Font.PLAIN, 16));
         } catch (Exception ignored) {}
     }
 
@@ -62,7 +63,7 @@ public class TodoApp extends JFrame {
         topBar.add(titleLabel, BorderLayout.CENTER);
 
         JButton logoutButton = new JButton("خروج");
-        logoutButton.setFont(new Font("Tahoma", Font.BOLD, 14));
+        logoutButton.setFont(new Font("Tahoma", Font.BOLD, 16));
         logoutButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         logoutButton.addActionListener(e -> logout());
         logoutButton.setForeground(Color.WHITE);
@@ -102,8 +103,22 @@ public class TodoApp extends JFrame {
         styleInput(dateField);
         dateField.setText(toPersianDate(new Date()));
 
+        // Add key listeners to prevent deletion during editing
+        KeyAdapter preventDeleteListener = new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (isEditing && (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || 
+                                e.getKeyCode() == KeyEvent.VK_DELETE)) {
+                    e.consume();
+                }
+            }
+        };
+        
+        taskField.addKeyListener(preventDeleteListener);
+        dateField.addKeyListener(preventDeleteListener);
+
         actionButton = new JButton("افزودن کار جدید");
-        actionButton.setPreferredSize(new Dimension(150, 40));
+        actionButton.setPreferredSize(new Dimension(150, 45));
         actionButton.setBackground(new Color(66, 133, 244));
         actionButton.setForeground(Color.WHITE);
         actionButton.setBorder(new RoundedBorder(8));
@@ -173,7 +188,7 @@ public class TodoApp extends JFrame {
     }
 
     private void styleInput(JTextField field) {
-        field.setPreferredSize(new Dimension(field.getPreferredSize().width, 40));
+        field.setPreferredSize(new Dimension(field.getPreferredSize().width, 45));
         field.setBorder(BorderFactory.createCompoundBorder(
             new RoundedBorder(8),
             BorderFactory.createEmptyBorder(5, 10, 5, 10)
@@ -181,7 +196,7 @@ public class TodoApp extends JFrame {
         field.setBackground(new Color(245, 247, 250));
         field.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         field.setHorizontalAlignment(JTextField.RIGHT);
-        field.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        field.setFont(new Font("Tahoma", Font.PLAIN, 16));
     }
 
     private void logout() {
@@ -205,6 +220,7 @@ public class TodoApp extends JFrame {
             return;
         }
 
+        isEditing = true;
         if (editIndex >= 0) {
             TodoItem item = items.get(editIndex);
             item.desc = desc;
@@ -217,6 +233,7 @@ public class TodoApp extends JFrame {
 
         taskField.setText("");
         dateField.setText(toPersianDate(new Date()));
+        isEditing = false;
         saveTasks();
         renderList();
         
@@ -244,10 +261,11 @@ public class TodoApp extends JFrame {
         JLabel text = new JLabel(item.completed ? 
             "<html><strike style='color: #999'>" + item.desc + "</strike></html>" : 
             item.desc);
-        text.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        text.setFont(new Font("Tahoma", Font.PLAIN, 16));
 
         JLabel date = new JLabel(item.date);
         date.setForeground(new Color(100, 100, 100));
+        date.setFont(new Font("Tahoma", Font.PLAIN, 14));
 
         JPanel contentPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         contentPanel.setBackground(Color.WHITE);
