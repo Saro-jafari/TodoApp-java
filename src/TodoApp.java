@@ -148,6 +148,7 @@ public class TodoApp extends JFrame {
         ));
         field.setBackground(new Color(245, 247, 250));
         field.setPreferredSize(new Dimension(field.getPreferredSize().width, 40));
+        field.setHorizontalAlignment(JTextField.RIGHT);
     }
 
     private void logout() {
