@@ -87,8 +87,16 @@ public class TodoApp extends JFrame {
         JPanel fieldsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 0));
         fieldsPanel.setBackground(Color.WHITE);
 
+        // Create input fields with proper focus handling
         taskField = new JTextField(30);
         dateField = new JTextField(12);
+        
+        // Ensure fields are enabled and focusable
+        taskField.setEnabled(true);
+        dateField.setEnabled(true);
+        taskField.setFocusable(true);
+        dateField.setFocusable(true);
+
         styleInput(taskField);
         styleInput(dateField);
         dateField.setText(toPersianDate(new Date()));
@@ -100,10 +108,17 @@ public class TodoApp extends JFrame {
         actionButton.setBorder(new RoundedBorder(8));
         actionButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
+        // Create labels with proper alignment
+        JLabel taskLabel = new JLabel("عنوان کار:");
+        JLabel dateLabel = new JLabel("تاریخ:");
+        taskLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        dateLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        // Add components in correct order for RTL
         fieldsPanel.add(actionButton);
-        fieldsPanel.add(new JLabel("تاریخ:"));
+        fieldsPanel.add(dateLabel);
         fieldsPanel.add(dateField);
-        fieldsPanel.add(new JLabel("عنوان کار:"));
+        fieldsPanel.add(taskLabel);
         fieldsPanel.add(taskField);
 
         inputPanel.add(fieldsPanel);
@@ -131,24 +146,37 @@ public class TodoApp extends JFrame {
 
         // Add action listeners
         actionButton.addActionListener(e -> onAction());
+        
+        // Improved key listeners
         KeyAdapter enterListener = new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) onAction();
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    onAction();
+                }
             }
         };
+        
         taskField.addKeyListener(enterListener);
         dateField.addKeyListener(enterListener);
+
+        // Request focus to task field initially
+        SwingUtilities.invokeLater(() -> taskField.requestFocusInWindow());
     }
 
     private void styleInput(JTextField field) {
+        field.setPreferredSize(new Dimension(field.getPreferredSize().width, 40));
         field.setBorder(BorderFactory.createCompoundBorder(
             new RoundedBorder(8),
-            BorderFactory.createEmptyBorder(10, 15, 10, 15)
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
         field.setBackground(new Color(245, 247, 250));
-        field.setPreferredSize(new Dimension(field.getPreferredSize().width, 40));
         field.setHorizontalAlignment(JTextField.RIGHT);
+        
+        // Ensure proper input handling
+        field.setEnabled(true);
+        field.setEditable(true);
+        field.setFocusable(true);
     }
 
     private void logout() {
@@ -186,6 +214,9 @@ public class TodoApp extends JFrame {
         dateField.setText(toPersianDate(new Date()));
         saveTasks();
         renderList();
+        
+        // Return focus to task field after adding
+        SwingUtilities.invokeLater(() -> taskField.requestFocusInWindow());
     }
 
     private JPanel createItemPanel(TodoItem item, int index) {
@@ -228,6 +259,7 @@ public class TodoApp extends JFrame {
             taskField.setText(item.desc);
             dateField.setText(item.date);
             actionButton.setText("ذخیره تغییرات");
+            taskField.requestFocusInWindow();
         });
 
         JButton deleteBtn = createButton("حذف", new Color(234, 67, 53), e -> {
