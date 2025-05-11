@@ -3,20 +3,18 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class LoginScreen extends JFrame {
+public class RegistrationScreen extends JFrame {
     private JTextField usernameField;
-    private JPasswordField passwordField;
-    private LoginCallback callback;
+    private JPasswordField passwordField, confirmPasswordField;
 
-    public LoginScreen(LoginCallback callback) {
-        super("ورود به برنامه");
-        this.callback = callback;
+    public RegistrationScreen() {
+        super("ثبت نام کاربر جدید");
         initComponents();
     }
 
     private void initComponents() {
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(400, 300);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setSize(400, 350);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
         getContentPane().setBackground(Color.WHITE);
@@ -28,7 +26,7 @@ public class LoginScreen extends JFrame {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel titleLabel = new JLabel("ورود به سیستم");
+        JLabel titleLabel = new JLabel("ثبت نام کاربر جدید");
         titleLabel.setFont(new Font("Tahoma", Font.BOLD, 20));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         gbc.gridx = 0;
@@ -59,35 +57,37 @@ public class LoginScreen extends JFrame {
         gbc.gridy = 2;
         mainPanel.add(passwordField, gbc);
 
+        JLabel confirmPasswordLabel = new JLabel("تکرار رمز عبور:");
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        mainPanel.add(confirmPasswordLabel, gbc);
+
+        confirmPasswordField = new JPasswordField(15);
+        styleInput(confirmPasswordField);
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        mainPanel.add(confirmPasswordField, gbc);
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         buttonPanel.setBackground(Color.WHITE);
 
-        JButton loginButton = new JButton("ورود");
-        loginButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        loginButton.addActionListener(e -> onLogin());
-
         JButton registerButton = new JButton("ثبت نام");
         registerButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        registerButton.addActionListener(e -> new RegistrationScreen().setVisible(true));
+        registerButton.addActionListener(e -> onRegister());
 
-        buttonPanel.add(loginButton);
+        JButton cancelButton = new JButton("انصراف");
+        cancelButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        cancelButton.addActionListener(e -> dispose());
+
         buttonPanel.add(registerButton);
+        buttonPanel.add(cancelButton);
 
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.CENTER;
         mainPanel.add(buttonPanel, gbc);
-
-        KeyAdapter enterListener = new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) onLogin();
-            }
-        };
-        usernameField.addKeyListener(enterListener);
-        passwordField.addKeyListener(enterListener);
 
         add(mainPanel, BorderLayout.CENTER);
     }
@@ -100,25 +100,31 @@ public class LoginScreen extends JFrame {
         field.setBackground(new Color(250, 250, 255));
     }
 
-    private void onLogin() {
+    private void onRegister() {
         String username = usernameField.getText().trim();
         String password = new String(passwordField.getPassword()).trim();
+        String confirmPassword = new String(confirmPasswordField.getPassword()).trim();
 
-        if (username.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "لطفاً نام کاربری و رمز عبور را وارد کنید.", "خطا", JOptionPane.ERROR_MESSAGE);
+        if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "لطفاً تمام فیلدها را پر کنید.", "خطا", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        if (UserManager.getInstance().validateUser(username, password)) {
-            dispose();
-            callback.onLoginSuccess();
-        } else {
-            JOptionPane.showMessageDialog(this, "نام کاربری یا رمز عبور اشتباه است.", "خطا", JOptionPane.ERROR_MESSAGE);
+        if (!password.equals(confirmPassword)) {
+            JOptionPane.showMessageDialog(this, "رمز عبور و تکرار آن مطابقت ندارند.", "خطا", JOptionPane.ERROR_MESSAGE);
             passwordField.setText("");
+            confirmPasswordField.setText("");
+            return;
         }
-    }
 
-    public interface LoginCallback {
-        void onLoginSuccess();
+        if (UserManager.getInstance().registerUser(username, password)) {
+            JOptionPane.showMessageDialog(this, "ثبت نام با موفقیت انجام شد.", "موفقیت", JOptionPane.INFORMATION_MESSAGE);
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "این نام کاربری قبلاً ثبت شده است.", "خطا", JOptionPane.ERROR_MESSAGE);
+            usernameField.setText("");
+            passwordField.setText("");
+            confirmPasswordField.setText("");
+        }
     }
 }
