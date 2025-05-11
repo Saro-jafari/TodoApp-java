@@ -247,7 +247,7 @@ public class TodoApp extends JFrame {
             new RoundedBorder(15),
             BorderFactory.createEmptyBorder(20, 25, 20, 25)
         ));
-        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 130));
 
         JCheckBox check = new JCheckBox();
         check.setSelected(item.completed);
@@ -301,7 +301,7 @@ public class TodoApp extends JFrame {
 
     private JButton createButton(String text, Color color, ActionListener listener) {
         JButton button = new JButton(text);
-        button.setPreferredSize(new Dimension(120, 45));
+        button.setPreferredSize(new Dimension(120, 40));
         button.setBackground(color);
         button.setForeground(Color.WHITE);
         button.setBorder(new RoundedBorder(8));
