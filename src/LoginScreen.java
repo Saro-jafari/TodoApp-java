@@ -40,10 +40,11 @@ public class LoginScreen extends JFrame {
         JPanel usernamePanel = new JPanel(new BorderLayout(10, 0));
         usernamePanel.setBackground(Color.WHITE);
         JLabel usernameLabel = new JLabel("نام کاربری:");
+        usernameLabel.setFont(new Font("Tahoma", Font.BOLD, 16));
         usernameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         usernameField = new JTextField(15);
         styleInput(usernameField);
-        usernamePanel.add(usernameLabel, BorderLayout.WEST);
+        usernamePanel.add(usernameLabel, BorderLayout.EAST);
         usernamePanel.add(usernameField, BorderLayout.CENTER);
 
         gbc.gridx = 0;
@@ -56,10 +57,11 @@ public class LoginScreen extends JFrame {
         JPanel passwordPanel = new JPanel(new BorderLayout(10, 0));
         passwordPanel.setBackground(Color.WHITE);
         JLabel passwordLabel = new JLabel("رمز عبور:");
+        passwordLabel.setFont(new Font("Tahoma", Font.BOLD, 16));
         passwordLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         passwordField = new JPasswordField(15);
         styleInput(passwordField);
-        passwordPanel.add(passwordLabel, BorderLayout.WEST);
+        passwordPanel.add(passwordLabel, BorderLayout.EAST);
         passwordPanel.add(passwordField, BorderLayout.CENTER);
 
         gbc.gridx = 0;
@@ -116,6 +118,7 @@ public class LoginScreen extends JFrame {
         button.setPreferredSize(new Dimension(100, 35));
         button.setBackground(new Color(66, 133, 244));
         button.setForeground(Color.WHITE);
+        button.setFont(new Font("Tahoma", Font.BOLD, 16));
         button.setBorder(new RoundedBorder(8));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
