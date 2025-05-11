@@ -41,7 +41,6 @@ public class TodoApp extends JFrame {
         getContentPane().setBackground(new Color(240, 242, 245));
         applyComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
-        // Top bar with gradient
         JPanel topBar = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -75,7 +74,6 @@ public class TodoApp extends JFrame {
         logoutPanel.add(logoutButton);
         topBar.add(logoutPanel, BorderLayout.WEST);
 
-        // Input panel
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
         inputPanel.setBackground(Color.WHITE);
@@ -84,8 +82,11 @@ public class TodoApp extends JFrame {
             BorderFactory.createEmptyBorder(30, 30, 30, 30)
         ));
 
-        JPanel fieldsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 0));
+        JPanel fieldsPanel = new JPanel(new GridBagLayout());
         fieldsPanel.setBackground(Color.WHITE);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(0, 10, 0, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         taskField = new JTextField(30);
         dateField = new JTextField(12);
@@ -113,23 +114,29 @@ public class TodoApp extends JFrame {
         taskLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         dateLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
-        JPanel taskPanel = new JPanel(new BorderLayout(10, 0));
-        taskPanel.setBackground(Color.WHITE);
-        taskPanel.add(taskLabel, BorderLayout.WEST);
-        taskPanel.add(taskField, BorderLayout.CENTER);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.1;
+        fieldsPanel.add(actionButton, gbc);
 
-        JPanel datePanel = new JPanel(new BorderLayout(10, 0));
-        datePanel.setBackground(Color.WHITE);
-        datePanel.add(dateLabel, BorderLayout.WEST);
-        datePanel.add(dateField, BorderLayout.CENTER);
+        gbc.gridx = 1;
+        gbc.weightx = 0.15;
+        fieldsPanel.add(dateLabel, gbc);
 
-        fieldsPanel.add(actionButton);
-        fieldsPanel.add(datePanel);
-        fieldsPanel.add(taskPanel);
+        gbc.gridx = 2;
+        gbc.weightx = 0.25;
+        fieldsPanel.add(dateField, gbc);
+
+        gbc.gridx = 3;
+        gbc.weightx = 0.15;
+        fieldsPanel.add(taskLabel, gbc);
+
+        gbc.gridx = 4;
+        gbc.weightx = 0.35;
+        fieldsPanel.add(taskField, gbc);
 
         inputPanel.add(fieldsPanel);
 
-        // List panel
         listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         listPanel.setBackground(new Color(240, 242, 245));
@@ -139,7 +146,6 @@ public class TodoApp extends JFrame {
         scrollPane.setBorder(null);
         scrollPane.getViewport().setBackground(new Color(240, 242, 245));
 
-        // Main content panel
         JPanel contentPanel = new JPanel(new BorderLayout(0, 20));
         contentPanel.setBackground(new Color(240, 242, 245));
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -175,6 +181,7 @@ public class TodoApp extends JFrame {
         field.setBackground(new Color(245, 247, 250));
         field.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         field.setHorizontalAlignment(JTextField.RIGHT);
+        field.setFont(new Font("Tahoma", Font.PLAIN, 14));
     }
 
     private void logout() {
