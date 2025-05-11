@@ -87,13 +87,13 @@ public class TodoApp extends JFrame {
         JPanel fieldsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 0));
         fieldsPanel.setBackground(Color.WHITE);
 
-        // Create input fields with proper focus handling
         taskField = new JTextField(30);
         dateField = new JTextField(12);
         
-        // Ensure fields are enabled and focusable
         taskField.setEnabled(true);
         dateField.setEnabled(true);
+        taskField.setEditable(true);
+        dateField.setEditable(true);
         taskField.setFocusable(true);
         dateField.setFocusable(true);
 
@@ -108,18 +108,24 @@ public class TodoApp extends JFrame {
         actionButton.setBorder(new RoundedBorder(8));
         actionButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        // Create labels with proper alignment
         JLabel taskLabel = new JLabel("عنوان کار:");
         JLabel dateLabel = new JLabel("تاریخ:");
         taskLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         dateLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
-        // Add components in correct order for RTL
+        JPanel taskPanel = new JPanel(new BorderLayout(10, 0));
+        taskPanel.setBackground(Color.WHITE);
+        taskPanel.add(taskLabel, BorderLayout.WEST);
+        taskPanel.add(taskField, BorderLayout.CENTER);
+
+        JPanel datePanel = new JPanel(new BorderLayout(10, 0));
+        datePanel.setBackground(Color.WHITE);
+        datePanel.add(dateLabel, BorderLayout.WEST);
+        datePanel.add(dateField, BorderLayout.CENTER);
+
         fieldsPanel.add(actionButton);
-        fieldsPanel.add(dateLabel);
-        fieldsPanel.add(dateField);
-        fieldsPanel.add(taskLabel);
-        fieldsPanel.add(taskField);
+        fieldsPanel.add(datePanel);
+        fieldsPanel.add(taskPanel);
 
         inputPanel.add(fieldsPanel);
 
@@ -140,14 +146,11 @@ public class TodoApp extends JFrame {
         contentPanel.add(inputPanel, BorderLayout.NORTH);
         contentPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Add components
         add(topBar, BorderLayout.NORTH);
         add(contentPanel, BorderLayout.CENTER);
 
-        // Add action listeners
         actionButton.addActionListener(e -> onAction());
         
-        // Improved key listeners
         KeyAdapter enterListener = new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -160,7 +163,6 @@ public class TodoApp extends JFrame {
         taskField.addKeyListener(enterListener);
         dateField.addKeyListener(enterListener);
 
-        // Request focus to task field initially
         SwingUtilities.invokeLater(() -> taskField.requestFocusInWindow());
     }
 
@@ -171,12 +173,8 @@ public class TodoApp extends JFrame {
             BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
         field.setBackground(new Color(245, 247, 250));
+        field.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         field.setHorizontalAlignment(JTextField.RIGHT);
-        
-        // Ensure proper input handling
-        field.setEnabled(true);
-        field.setEditable(true);
-        field.setFocusable(true);
     }
 
     private void logout() {
@@ -215,7 +213,6 @@ public class TodoApp extends JFrame {
         saveTasks();
         renderList();
         
-        // Return focus to task field after adding
         SwingUtilities.invokeLater(() -> taskField.requestFocusInWindow());
     }
 
