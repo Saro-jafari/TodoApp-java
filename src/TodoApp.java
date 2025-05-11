@@ -40,6 +40,17 @@ public class TodoApp extends JFrame {
         getContentPane().setBackground(Color.WHITE);
         applyComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
+        // Add logout button
+        JPanel topBar = new JPanel(new BorderLayout());
+        topBar.setBackground(Color.WHITE);
+        JButton logoutButton = new JButton("خروج");
+        logoutButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        logoutButton.addActionListener(e -> logout());
+        JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        logoutPanel.setBackground(Color.WHITE);
+        logoutPanel.add(logoutButton);
+        topBar.add(logoutPanel, BorderLayout.WEST);
+
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
         topPanel.setBackground(Color.WHITE);
         topPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
@@ -73,7 +84,8 @@ public class TodoApp extends JFrame {
         topPanel.add(dateField);
         topPanel.add(actionButton);
 
-        add(topPanel, BorderLayout.NORTH);
+        topBar.add(topPanel, BorderLayout.CENTER);
+        add(topBar, BorderLayout.NORTH);
 
         listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
@@ -81,6 +93,18 @@ public class TodoApp extends JFrame {
         JScrollPane scroll = new JScrollPane(listPanel);
         scroll.setBorder(new EmptyBorder(0, 15, 15, 25));
         add(scroll, BorderLayout.CENTER);
+    }
+
+    private void logout() {
+        dispose();
+        SwingUtilities.invokeLater(() -> {
+            new LoginScreen(new LoginScreen.LoginCallback() {
+                @Override
+                public void onLoginSuccess() {
+                    SwingUtilities.invokeLater(() -> new TodoApp().setVisible(true));
+                }
+            }).setVisible(true);
+        });
     }
 
     private void styleInput(JTextField field) {
@@ -223,21 +247,16 @@ public class TodoApp extends JFrame {
 
     private boolean isLeap(int y){return(y%4==0&&y%100!=0)||(y%400==0);}
 
-    public static void main(String[] args){ SwingUtilities.invokeLater(() -> new TodoApp().setVisible(true)); }
+    public static void main(String[] args){ 
+        SwingUtilities.invokeLater(() -> {
+            new LoginScreen(new LoginScreen.LoginCallback() {
+                @Override
+                public void onLoginSuccess() {
+                    SwingUtilities.invokeLater(() -> new TodoApp().setVisible(true));
+                }
+            }).setVisible(true);
+        });
+    }
 
     class TodoItem { String desc, date; boolean completed; TodoItem(String d,String dt,boolean c){desc=d;date=dt;completed=c;} }
-}
-
-// Custom rounded border for inputs
-class RoundedBorder implements Border {
-    private int radius;
-    public RoundedBorder(int radius) { this.radius = radius; }
-    public Insets getBorderInsets(Component c) { return new Insets(radius+2, radius+8, radius+2, radius+8); }
-    public boolean isBorderOpaque() { return false; }
-    public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(new Color(200, 200, 200));
-        g2.drawRoundRect(x, y, width-1, height-1, radius, radius);
-    }
 }
