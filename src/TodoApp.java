@@ -26,21 +26,12 @@ public class TodoApp extends JFrame {
     private void initLookAndFeel() {
         try {
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-            
-            // Load Vazir font
-            InputStream is = TodoApp.class.getResourceAsStream("/fonts/Vazir.ttf");
-            if (is != null) {
-                Font vazirFont = Font.createFont(Font.TRUETYPE_FONT, is);
-                GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(vazirFont);
-                
-                Font baseFont = vazirFont.deriveFont(Font.PLAIN, 16);
-                Font boldFont = vazirFont.deriveFont(Font.BOLD, 16);
-                
-                UIManager.put("Label.font", baseFont);
-                UIManager.put("Button.font", boldFont);
-                UIManager.put("TextField.font", baseFont);
-                UIManager.put("CheckBox.font", baseFont);
-            }
+            Font base = new Font("Tahoma", Font.PLAIN, 16);
+            Font bold = new Font("Tahoma", Font.BOLD, 16);
+            UIManager.put("Label.font", base);
+            UIManager.put("Button.font", bold);
+            UIManager.put("TextField.font", base);
+            UIManager.put("CheckBox.font", base);
         } catch (Exception ignored) {}
     }
 
@@ -205,7 +196,7 @@ public class TodoApp extends JFrame {
         JLabel text = new JLabel(item.completed ? 
             "<html><strike style='color: #999'>" + item.desc + "</strike></html>" : 
             item.desc);
-        text.setFont(new Font("Vazir", Font.PLAIN, 16));
+        text.setFont(new Font("Tahoma", Font.PLAIN, 16));
 
         JLabel date = new JLabel(item.date);
         date.setForeground(new Color(100, 100, 100));
